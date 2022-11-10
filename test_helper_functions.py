@@ -1,113 +1,103 @@
 import unittest
+from numbers import Number
+
 import numpy as np
 import pickle
 
 
+def is_isomorhipic(tree1: "Node", tree2: "Node") -> bool:
+    """Check if two trees are isomorphic, checking their structure and distances."""
+    if tree1 is None and tree2 is None:
+        return True
+    if (tree1 is None and tree2 is not None) or (tree1 is not None and tree2 is None):
+        return False
+
+    isomorphic_orig_order = (
+        is_isomorhipic(tree1.left, tree2.left) and
+        is_isomorhipic(tree1.right, tree2.right) and
+        np.isclose(tree1.left_distance, tree2.left_distance) and
+        np.isclose(tree1.right_distance, tree2.right_distance)
+    )
+    isomorphic_flip_order = (
+        is_isomorhipic(tree1.left, tree2.right) and
+        is_isomorhipic(tree1.right, tree2.left) and
+        np.isclose(tree1.left_distance, tree2.right_distance) and
+        np.isclose(tree1.right_distance, tree2.left_distance)
+    )
+
+    if isomorphic_orig_order or isomorphic_flip_order:
+        return True
+
+    return False
+
+
 class TestNeighbourJoining(unittest.TestCase):
-    def alignment_case_1(self):
+    def test_neighbor_joining_node_api(self):
+        from helper_functions_template_solved import neighbor_joining, Node
 
-        distances = np.array(
-            [
-                [0, 14, 14, 12],
-                [0, 0, 16, 14],
-                [0, 0, 0, 6],
-                [0, 0, 0, 0],
-            ]
-        )
+        distances = np.array([
+            [ 0, 14, 14, 12],
+            [ 0,  0, 16, 14],
+            [ 0,  0,  0,  6],
+            [ 0,  0,  0,  0],
+        ])
         distances = distances + distances.T
-        return distances
 
-    def alignment_case_2(self):
+        original_distances = distances.copy()
 
-        distances = np.array(
-            [
-                [0, 32, 48, 96, 80],
-                [32, 0, 64, 88, 72],
-                [48, 64, 0, 96, 80],
-                [96, 88, 96, 0, 48],
-                [80, 72, 80, 48, 0],
-            ]
+        tree: Node = neighbor_joining(distances)
+
+        # Check that the distance matrix remained in-tact
+        np.testing.assert_almost_equal(
+            distances,
+            original_distances,
+            err_msg="`neighbor_joining` changed original distance matrix!",
         )
-        return distances
 
-    def test_neighbour_joining_tree_format_shallow(self):
-
-        from helper_functions import neighbour_joining, Node
-
-        distances = self.alignment_case_1()
-        labels = [str(i + 1) for i in range(len(distances))]
-
-        tree = neighbour_joining(distances, labels)
-
-        # tests for object types
+        # Check that NJ returns a Node object
         self.assertIsInstance(tree, Node)
+        # Check if the Node object has a valid public API
+        self.assertTrue(hasattr(tree, "id"))
 
-        self.assertIsInstance(tree.children, list)
-        self.assertIsInstance(tree.children[0], Node)
+        self.assertIsInstance(tree.left, Node)
+        self.assertIsInstance(tree.right, Node)
 
-        self.assertIsInstance(tree.distances, list)
-        self.assertIsInstance(tree.distances[0], float)
+        self.assertIsInstance(tree.left_distance, Number)
+        self.assertIsInstance(tree.right_distance, Number)
 
-        self.assertEqual(len(tree.children), len(tree.distances))
+    def test_textbook_example(self):
+        from helper_functions import Node, neighbor_joining
 
-    def test_neighbour_joining_tree_format_deep(self):
+        distances = np.array([
+            [ 0,  5,  4,  9,  8],
+            [ 0,  0,  5, 10,  9],
+            [ 0,  0,  0,  7,  6],
+            [ 0,  0,  0,  0,  7],
+            [ 0,  0,  0,  0,  0],
+        ])
+        distances = distances + distances.T
 
-        from helper_functions import neighbour_joining, Node
+        result = neighbor_joining(distances)
+        expected = Node(
+            "ROOT",
+            left=Node(
+                "X",
+                left=Node(
+                    "W",
+                    left=Node("D", None, 0, None, 0), left_distance=4,
+                    right=Node("E", None, 0, None, 0), right_distance=3,
+                ), left_distance=2,
+                right=Node("C", None, 0, None, 0), right_distance=1,
+            ), left_distance=0.5,
+            right=Node(
+                "Y",
+                left=Node("A", None, 0, None, 0), left_distance=2,
+                right=Node("B", None, 0, None, 0), right_distance=3,
+            ), right_distance=0.5,
+        )
+        print(expected)
 
-        distances = self.alignment_case_1()
-        labels = [str(i + 1) for i in range(len(distances))]
-
-        tree = neighbour_joining(distances, labels)
-
-        # tests for object deep in a tree
-        stack = [tree]
-        while len(stack) > 0:
-            node = stack.pop()
-
-            self.assertIsInstance(node, Node)
-            self.assertIsInstance(node.children, list)
-            self.assertEqual(len(node.children), len(node.distances))
-
-            stack += node.children
-
-    def test_neighbour_joining_1(self):
-
-        from helper_functions import neighbour_joining
-
-        distances = self.alignment_case_1()
-        labels = [str(i + 1) for i in range(len(distances))]
-
-        tree = neighbour_joining(distances, labels)
-
-        self.assertEqual(set(tree.distances), set([2.0, 2.0]))
-
-        child_dist = [set([2.0, 4.0]), set([6.0, 8.0])]
-
-        self.assertIn(set(tree.children[0].distances), child_dist)
-        self.assertIn(set(tree.children[1].distances), child_dist)
-
-    def test_neighbour_joining_2(self):
-
-        from helper_functions import neighbour_joining
-
-        distances = self.alignment_case_2()
-        labels = [str(i + 1) for i in range(len(distances))]
-
-        solutions = [
-            set([5.0, 5.0]),
-            set([30.0, 34.0]),
-            set([32.0, 16.0]),
-            set([14.0, 18.0]),
-            set([]),
-        ]
-
-        tree = neighbour_joining(distances, labels)
-
-        stack = [tree]
-        while len(stack) > 0:
-            node = stack.pop()
-            self.assertIn(set(node.distances), solutions)
-            stack += node.children
+        self.assertTrue(is_isomorhipic(result, expected))
 
 
 class TestPlottingDendrogram(unittest.TestCase):
@@ -115,16 +105,18 @@ class TestPlottingDendrogram(unittest.TestCase):
 
         with open("tests/example_tree_1.pickle", "rb") as f:
             self.tree_1 = pickle.load(f)
+        print(self.tree_1)
 
         with open("tests/example_tree_2.pickle", "rb") as f:
             self.tree_2 = pickle.load(f)
+        print(self.tree_2)
 
         with open("tests/test_plotting_dendrogram.pickle", "rb") as f:
             self.figure = pickle.load(f)
 
     def test_plotting_dendrogram(self):
 
-        from helper_functions import plot_dendrogram_NJ
+        from helper_functions_template_solved import plot_dendrogram_NJ
 
         ax = self.figure.axes
 
@@ -132,7 +124,7 @@ class TestPlottingDendrogram(unittest.TestCase):
         plot_dendrogram_NJ(self.tree_2, ax=ax[3])
 
         ax[0].set_title("Test Case 1", fontsize=12)
-        ax[0].set_title("Test Case 2", fontsize=12)
+        ax[1].set_title("Test Case 2", fontsize=12)
 
         ax[0].set_ylabel("Ground truth", fontsize=12)
         ax[2].set_ylabel("Your implementation", fontsize=12)

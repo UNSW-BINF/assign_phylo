@@ -1,107 +1,123 @@
 """Helper functions for HW3"""
 import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 
 
 class Node:
     def __init__(
         self,
         id: str,
-        children: list["Node"] = [],
-        distances: list[float] = [],
-        samples: list["Node"] = None,
+        left: "Node",
+        left_distance: float,
+        right: "Node",
+        right_distance: float,
         confidence: float = None,
     ):
-        """A node in a tree use by neighbour joining algorithm.
+        """A node in a binary tree produced by neighbour joining algorithm.
 
         Parameters
         ----------
         id: str
-            Name of the node
-        children: list["Node"]
-            List of child nodes in a tree
-        distances: list[float]
-            List of distances to each child respectively
-        samples: list["Node"]
-            List of all terminal nodes in a subtree of a node
+            Name of the node.
+        left: Node
+            Left child.
+        left_distance: float
+            The distance to the left child.
+        right: Node
+            Right child.
+        right_distance: float
+            The distance to the right child.
         confidence: float
-            Confidence level of a split determined by the bootstrap method
+            The confidence level of the split determined by the bootstrap method.
+            Only used if you implement Bonus Problem 1.
+
+        Notes
+        -----
+        The current public API needs to remain as it is, i.e., don't change the
+        names of the properties in the template, as the tests expect this kind
+        of structure. However, feel free to add any methods/properties/attributes
+        that you might need in your tree construction.
+
         """
         self.id = id
-        self.children = children
-        self.distances = distances
-        self.samples = samples
+        self.left = left
+        self.left_distance = left_distance
+        self.right = right
+        self.right_distance = right_distance
         self.confidence = confidence
 
 
-def neighbour_joining(distances: np.array, labels: list[str] = []) -> Node:
-    """Neighbour joining algorithm
+def neighbour_joining(distances: np.array) -> Node:
+    """The Neighbour-Joining algorithm.
 
     Parameters
     ----------
     distances: np.ndarray
-        A two dimensional, square, symmetric matrix containing distances between data
-        points. The diagonal is zeros.
-    labels: list[str]
-        A list of labels for samples in distance matrix. Add labels to Node objects
-        and use them when plotting a dendrogram
+        A 2d square, symmetric distance matrix containing distances between
+        data points. The diagonal entries should always be zero; d(x, x) = 0.
 
     Returns
     -------
     Node
-        A root node of a neighbour joining tree
+        A root node of the neighbour joining tree.
+
     """
     raise NotImplementedError()
 
 
-def plot_dendrogram_NJ(tree: Node, ax: plt.axes = None, **kwargs) -> None:
+def plot_nj_tree(tree: Node, ax: Axes = None, **kwargs) -> None:
     """A function for plotting neighbour joining phylogeny dendrogram.
 
     Parameters
     ----------
     tree: Node
-        A phylogeny tree in a form of a Node object from neighbour_joining function
-    ax: plt.axes
-        An axes from matplotlib to which you should plot a dendrogram
-    kwargs: Any
-        Keyword arguments as optional parameters for more informative vizualizations
+        The root of the phylogenetic tree produced by `neighbor_joining(...)`.
+    ax: Axes
+        A matplotlib Axes object which should be used for plotting.
+    kwargs
+        Feel free to replace/use these with any additional arguments you need.
 
     Example
     -------
-    >>> tree = neighbour_joining(distances, labels)
-    >>> f, ax = plt.subplots(1,1, figsize=(8,8))
-    >>> plot_dendrogram_NJ(tree=tree, ax=ax)
-    >>> f.savefig("example.png")
+    >>> import matplotlib.pyplot as plt
+    >>>
+    >>> tree = neighbour_joining(distances)
+    >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
+    >>> plot_nj_tree(tree=tree, ax=ax)
+    >>> fig.savefig("example.png")
+
     """
     raise NotImplementedError()
 
 
-def reroot_tree(tree: Node, new_root: Node) -> Node:
+def reroot_tree(tree: Node, outgroup: Node) -> Node:
     """A function to invert a tree and set a new root node.
 
     Parameters
     ----------
     tree: Node
-        A root node of a tree
-    new_root: Node
-        A Node to set as a new root
+        A current root of the tree.
+    outgroup: Node
+        The node that should be used as the outgroup of the new treee.
 
     Returns
     -------
     Node
-        Inverted tree with a new root node.
+        The new root of the inverted tree.
+
     """
     raise NotImplementedError()
 
 
-def ladderize_tree(tree: Node) -> None:
-    """Ladderize a tree.
-    Sort clades with more leaf nodes such that they apear first in array of children.
-    Sort a tree in place.
+def sort_children(tree: Node) -> None:
+    """Sort the children of a tree by their corresponding number of leaves.
+
+    The tree can be changed inplace.
 
     Paramteres
     ----------
     tree: Node
-        A root node of a tree to be ladderized
+        The root node of the tree.
+
     """
     raise NotImplementedError()

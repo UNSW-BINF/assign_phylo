@@ -121,3 +121,29 @@ def sort_children(tree: Node) -> None:
 
     """
     raise NotImplementedError()
+
+
+def plot_nj_tree_radial(tree: Node, ax: Axes = None, **kwargs) -> None:
+    """A function for plotting neighbour joining phylogeny dendrogram
+    with a radial layout.
+
+    Parameters
+    ----------
+    tree: Node
+        The root of the phylogenetic tree produced by `neighbor_joining(...)`.
+    ax: Axes
+        A matplotlib Axes object which should be used for plotting.
+    kwargs
+        Feel free to replace/use these with any additional arguments you need.
+
+    Example
+    -------
+    >>> import matplotlib.pyplot as plt
+    >>>
+    >>> tree = neighbour_joining(distances)
+    >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
+    >>> plot_nj_tree_radial(tree=tree, ax=ax)
+    >>> fig.savefig("example_radial.png")
+
+    """
+    raise NotImplementedError()

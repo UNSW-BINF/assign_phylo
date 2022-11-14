@@ -13,7 +13,7 @@ class Node:
         right_distance: float,
         confidence: float = None,
     ):
-        """A node in a binary tree produced by neighbour joining algorithm.
+        """A node in a binary tree produced by neighbor joining algorithm.
 
         Parameters
         ----------
@@ -47,8 +47,8 @@ class Node:
         self.confidence = confidence
 
 
-def neighbour_joining(distances: np.array) -> Node:
-    """The Neighbour-Joining algorithm.
+def neighbor_joining(distances: np.array) -> Node:
+    """The Neighbor-Joining algorithm.
 
     Parameters
     ----------
@@ -59,14 +59,14 @@ def neighbour_joining(distances: np.array) -> Node:
     Returns
     -------
     Node
-        A root node of the neighbour joining tree.
+        A root node of the neighbor joining tree.
 
     """
     raise NotImplementedError()
 
 
 def plot_nj_tree(tree: Node, ax: Axes = None, **kwargs) -> None:
-    """A function for plotting neighbour joining phylogeny dendrogram.
+    """A function for plotting neighbor joining phylogeny dendrogram.
 
     Parameters
     ----------
@@ -81,7 +81,7 @@ def plot_nj_tree(tree: Node, ax: Axes = None, **kwargs) -> None:
     -------
     >>> import matplotlib.pyplot as plt
     >>>
-    >>> tree = neighbour_joining(distances)
+    >>> tree = neighbor_joining(distances)
     >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
     >>> plot_nj_tree(tree=tree, ax=ax)
     >>> fig.savefig("example.png")
@@ -124,7 +124,7 @@ def sort_children(tree: Node) -> None:
 
 
 def plot_nj_tree_radial(tree: Node, ax: Axes = None, **kwargs) -> None:
-    """A function for plotting neighbour joining phylogeny dendrogram
+    """A function for plotting neighbor joining phylogeny dendrogram
     with a radial layout.
 
     Parameters
@@ -140,7 +140,7 @@ def plot_nj_tree_radial(tree: Node, ax: Axes = None, **kwargs) -> None:
     -------
     >>> import matplotlib.pyplot as plt
     >>>
-    >>> tree = neighbour_joining(distances)
+    >>> tree = neighbor_joining(distances)
     >>> fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
     >>> plot_nj_tree_radial(tree=tree, ax=ax)
     >>> fig.savefig("example_radial.png")

@@ -31,9 +31,9 @@ def is_isomorhipic(tree1: "Node", tree2: "Node") -> bool:
     return False
 
 
-class TestNeighbourJoining(unittest.TestCase):
-    def test_neighbour_joining_node_api(self):
-        from helper_functions import neighbour_joining, Node
+class TestNeighborJoining(unittest.TestCase):
+    def test_neighbor_joining_node_api(self):
+        from helper_functions import neighbor_joining, Node
 
         distances = np.array(
             [
@@ -47,13 +47,13 @@ class TestNeighbourJoining(unittest.TestCase):
 
         original_distances = distances.copy()
 
-        tree: Node = neighbour_joining(distances)
+        tree: Node = neighbor_joining(distances)
 
         # Check that the distance matrix remained in-tact
         np.testing.assert_almost_equal(
             distances,
             original_distances,
-            err_msg="`neighbour_joining` changed original distance matrix!",
+            err_msg="`neighbor_joining` changed original distance matrix!",
         )
 
         # Check that NJ returns a Node object
@@ -68,7 +68,7 @@ class TestNeighbourJoining(unittest.TestCase):
         self.assertIsInstance(tree.right_distance, Number)
 
     def test_textbook_example(self):
-        from helper_functions import Node, neighbour_joining
+        from helper_functions import Node, neighbor_joining
 
         distances = np.array(
             [
@@ -81,7 +81,7 @@ class TestNeighbourJoining(unittest.TestCase):
         )
         distances = distances + distances.T
 
-        result = neighbour_joining(distances)
+        result = neighbor_joining(distances)
         expected = Node(
             "ROOT",
             left=Node(

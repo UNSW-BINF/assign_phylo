@@ -41,7 +41,8 @@ class TestNeighborJoining(unittest.TestCase):
                 [0, 0, 16, 14],
                 [0, 0, 0, 6],
                 [0, 0, 0, 0],
-            ]
+            ],
+            dtype=float,
         )
         distances = distances + distances.T
 
@@ -59,7 +60,7 @@ class TestNeighborJoining(unittest.TestCase):
         # Check that NJ returns a Node object
         self.assertIsInstance(tree, Node)
         # Check if the Node object has a valid public API
-        self.assertTrue(hasattr(tree, "id"))
+        self.assertTrue(hasattr(tree, "name"))
 
         self.assertIsInstance(tree.left, Node)
         self.assertIsInstance(tree.right, Node)
@@ -77,7 +78,8 @@ class TestNeighborJoining(unittest.TestCase):
                 [0, 0, 0, 7, 6],
                 [0, 0, 0, 0, 7],
                 [0, 0, 0, 0, 0],
-            ]
+            ],
+            dtype=float,
         )
         distances = distances + distances.T
 
@@ -113,34 +115,190 @@ class TestNeighborJoining(unittest.TestCase):
 
 class TestPlottingDendrogram(unittest.TestCase):
     def setUp(self) -> None:
+        from helper_functions import Node
 
-        with open("tests/example_tree_1.pickle", "rb") as f:
-            self.tree_1 = pickle.load(f)
+        self.test_case_1_lines = [
+            [[0, 0], [1, 5]],
+            [[2, 2], [4, 6]],
+            [[2, 2], [0, 2]],
+            [[2, 8], [0, 0]],
+            [[0, 2], [1, 1]],
+            [[2, 10], [2, 2]],
+            [[2, 6], [4, 4]],
+            [[0, 2], [5, 5]],
+            [[2, 4], [6, 6]],
+            [[-0.2, 0], [3, 3]],
+        ]
 
-        with open("tests/example_tree_2.pickle", "rb") as f:
-            self.tree_2 = pickle.load(f)
+        self.test_case_1_leaf_labels = {
+            "A": [8, 0],
+            "B": [10, 2],
+            "C": [6, 4],
+            "D": [4, 6],
+        }
 
-        with open("tests/test_plotting_dendrogram.pickle", "rb") as f:
-            self.figure = pickle.load(f)
+        self.test_case_2_lines = [
+            [[2.5, 6.5], [0, 0]],
+            [[2.5, 5.5], [1, 1]],
+            [[0.5, 2.5], [0.5, 0.5]],
+            [[0.5, 1.5], [2, 2]],
+            [[0, 0.5], [4 / 3, 4 / 3]],
+            [[-0.2, 0], [12 / 5, 12 / 5]],
+            [[0.5, 2.5], [3, 3]],
+            [[0, 0.5], [3.5, 3.5]],
+            [[0.5, 3.5], [4, 4]],
+            [[2.5, 2.5], [0, 1]],
+            [[0.5, 0.5], [0.5, 2]],
+            [[0, 0], [4 / 3, 3.5]],
+            [[0.5, 0.5], [3, 4]],
+        ]
+        self.test_case_2_leaf_labels = {
+            "D": [6.5, 0],
+            "E": [5.5, 1],
+            "C": [1.5, 2],
+            "A": [2.5, 3],
+            "B": [3.5, 4],
+        }
+        self.tree_1 = Node(
+            "ROOT",
+            left=Node(
+                "X",
+                left=Node(
+                    "A",
+                    left=None,
+                    left_distance=0,
+                    right=None,
+                    right_distance=0,
+                ),
+                left_distance=6,
+                right=Node(
+                    "B",
+                    left=None,
+                    left_distance=0,
+                    right=None,
+                    right_distance=0,
+                ),
+                right_distance=8,
+            ),
+            left_distance=2,
+            right=Node(
+                "Y",
+                left=Node(
+                    "C",
+                    left=None,
+                    left_distance=0,
+                    right=None,
+                    right_distance=0,
+                ),
+                left_distance=4,
+                right=Node(
+                    "D",
+                    left=None,
+                    left_distance=0,
+                    right=None,
+                    right_distance=0,
+                ),
+                right_distance=2,
+            ),
+            right_distance=2,
+        )
+        self.tree_2 = Node(
+            "ROOT",
+            left=Node(
+                "X",
+                left=Node(
+                    "W",
+                    left=Node(
+                        "D",
+                        left=None,
+                        left_distance=0,
+                        right=None,
+                        right_distance=0,
+                    ),
+                    left_distance=4,
+                    right=Node(
+                        "E",
+                        left=None,
+                        left_distance=0,
+                        right=None,
+                        right_distance=0,
+                    ),
+                    right_distance=3,
+                ),
+                left_distance=2,
+                right=Node(
+                    "C",
+                    left=None,
+                    left_distance=0,
+                    right=None,
+                    right_distance=0,
+                ),
+                right_distance=1,
+            ),
+            left_distance=0.5,
+            right=Node(
+                "Y",
+                left=Node(
+                    "A",
+                    left=None,
+                    left_distance=0,
+                    right=None,
+                    right_distance=0,
+                ),
+                left_distance=2,
+                right=Node(
+                    "B",
+                    left=None,
+                    left_distance=0,
+                    right=None,
+                    right_distance=0,
+                ),
+                right_distance=3,
+            ),
+            right_distance=0.5,
+        )
+
+    def plot_gt_lines(self, lines: list, leaf_labels: dict, ax):
+
+        for line in lines:
+            ax.plot(line[0], line[1], color="k", lw=1.5)
+
+        for leaf, loc in leaf_labels.items():
+            ax.text(
+                loc[0],
+                loc[1],
+                f"  {leaf}",
+                color="k",
+                fontsize=12,
+                verticalalignment="center",
+            )
+
+        for loc in ["top", "right"]:
+            ax.spines[loc].set_visible(False)
 
     def test_plotting_dendrogram(self):
 
         from helper_functions import plot_nj_tree
 
-        ax = self.figure.axes
+        f, ax = plt.subplots(2, 2, figsize=(10, 7))
 
-        plot_nj_tree(self.tree_1, ax=ax[2])
-        plot_nj_tree(self.tree_2, ax=ax[3])
-
-        ax[0].set_title("Test Case 1", fontsize=12)
-        ax[1].set_title("Test Case 2", fontsize=12)
-
-        ax[0].set_ylabel("Ground truth", fontsize=12)
-        ax[2].set_ylabel("Your implementation", fontsize=12)
-
-        self.figure.savefig(
-            "tests/test_plotting_dendrogram", dpi=400, bbox_inches="tight"
+        self.plot_gt_lines(
+            self.test_case_1_lines, self.test_case_1_leaf_labels, ax[0][0]
         )
+        self.plot_gt_lines(
+            self.test_case_2_lines, self.test_case_2_leaf_labels, ax[0][1]
+        )
+
+        plot_nj_tree(self.tree_1, ax=ax[1][0])
+        plot_nj_tree(self.tree_2, ax=ax[1][1])
+
+        ax[0][0].set_title("Test Case 1", fontsize=12)
+        ax[0][1].set_title("Test Case 2", fontsize=12)
+
+        ax[0][0].set_ylabel("Ground truth", fontsize=12)
+        ax[1][0].set_ylabel("Your implementation", fontsize=12)
+
+        f.savefig("tests/test_plotting_dendrogram.png", dpi=400, bbox_inches="tight")
 
 
 if __name__ == "__main__":

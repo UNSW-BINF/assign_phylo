@@ -1,12 +1,13 @@
 """Helper functions for HW3"""
 import numpy as np
+from copy import deepcopy
 from matplotlib.axes import Axes
 
 
 class Node:
     def __init__(
         self,
-        id: str,
+        name: str,
         left: "Node",
         left_distance: float,
         right: "Node",
@@ -17,7 +18,7 @@ class Node:
 
         Parameters
         ----------
-        id: str
+        name: str
             Name of the node.
         left: Node
             Left child.
@@ -39,7 +40,7 @@ class Node:
         that you might need in your tree construction.
 
         """
-        self.id = id
+        self.name = name
         self.left = left
         self.left_distance = left_distance
         self.right = right
@@ -47,14 +48,21 @@ class Node:
         self.confidence = confidence
 
 
-def neighbor_joining(distances: np.array) -> Node:
+def neighbor_joining(distances: np.ndarray, labels: list) -> Node:
     """The Neighbor-Joining algorithm.
+
+    For the same results as in the later test dendrograms;
+    add new nodes to the end of the list/matrix and
+    in case of ties, use np.argmin to choose the joining pair.
 
     Parameters
     ----------
     distances: np.ndarray
         A 2d square, symmetric distance matrix containing distances between
         data points. The diagonal entries should always be zero; d(x, x) = 0.
+    labels: list
+        A list of labels corresponding to entries in the distances matrix.
+        Use them to set names of nodes.
 
     Returns
     -------
@@ -76,6 +84,7 @@ def plot_nj_tree(tree: Node, ax: Axes = None, **kwargs) -> None:
         A matplotlib Axes object which should be used for plotting.
     kwargs
         Feel free to replace/use these with any additional arguments you need.
+        But make sure your function can work without them, for testing purposes.
 
     Example
     -------
@@ -87,26 +96,85 @@ def plot_nj_tree(tree: Node, ax: Axes = None, **kwargs) -> None:
     >>> fig.savefig("example.png")
 
     """
-    raise NotImplementedError()
+    return ax
 
 
-def reroot_tree(tree: Node, outgroup: Node) -> Node:
-    """A function to invert a tree and set a new root node.
+def _find_a_parent_to_node(tree: Node, node: Node) -> tuple:
+    """Utility function for reroot_tree"""
+    stack = [tree]
+
+    while len(stack) > 0:
+
+        current_node = stack.pop()
+        if node.name == current_node.left.name:
+            return current_node, "left"
+        elif node.name == current_node.right.name:
+            return current_node, "right"
+
+        stack += [
+            n for n in [current_node.left, current_node.right] if n.left is not None
+        ]
+
+    return None
+
+
+def _remove_child_from_parent(parent_node: Node, child_location: str) -> None:
+    """Utility function for reroot_tree"""
+    setattr(parent_node, child_location, None)
+    setattr(parent_node, f"{child_location}_distance", 0.0)
+
+
+def reroot_tree(original_tree: Node, outgroup_node: Node) -> Node:
+    """A function to create a new root and invert a tree accordingly.
+
+    This function reroots tree with nodes in original format. If you
+    added any other relational parameters to your nodes, these parameters
+    will not be inverted! You can modify this implementation or create
+    additional functions to fix them.
 
     Parameters
     ----------
-    tree: Node
-        A current root of the tree.
-    outgroup: Node
-        The node that should be used as the outgroup of the new treee.
+    original_tree: Node
+        A root node of the original tree.
+    outgroup_node: Node
+        A Node to set as an outgroup (already included in a tree).
+        Find it by it's name and then use it as parameter.
 
     Returns
     -------
     Node
-        The new root of the inverted tree.
-
+        Inverted tree with a new root node.
     """
-    raise NotImplementedError()
+    tree = deepcopy(original_tree)
+
+    parent, child_loc = _find_a_parent_to_node(tree, outgroup_node)
+    distance = getattr(parent, f"{child_loc}_distance")
+    _remove_child_from_parent(parent, child_loc)
+
+    new_root = Node("new_root", parent, distance / 2, outgroup_node, distance / 2)
+    child = parent
+
+    while tree != child:
+        parent, child_loc = _find_a_parent_to_node(tree, child)
+
+        distance = getattr(parent, f"{child_loc}_distance")
+        _remove_child_from_parent(parent, child_loc)
+
+        empty_side = "left" if child.left is None else "right"
+        setattr(child, f"{empty_side}_distance", distance)
+        setattr(child, empty_side, parent)
+
+        if tree.name == parent.name:
+            break
+        child = parent
+
+    other_child_loc = "right" if child_loc == "left" else "left"
+    other_child_distance = getattr(parent, f"{other_child_loc}_distance")
+
+    setattr(child, f"{empty_side}_distance", other_child_distance + distance)
+    setattr(child, empty_side, getattr(parent, other_child_loc))
+
+    return new_root
 
 
 def sort_children(tree: Node) -> None:

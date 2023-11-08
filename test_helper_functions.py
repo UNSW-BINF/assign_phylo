@@ -48,7 +48,7 @@ class TestNeighborJoining(unittest.TestCase):
 
         original_distances = distances.copy()
 
-        tree: Node = neighbor_joining(distances)
+        tree: Node = neighbor_joining(distances, list("ABCD"))
 
         # Check that the distance matrix remained in-tact
         np.testing.assert_almost_equal(
@@ -83,7 +83,7 @@ class TestNeighborJoining(unittest.TestCase):
         )
         distances = distances + distances.T
 
-        result = neighbor_joining(distances)
+        result = neighbor_joining(distances, list("ABCDE"))
         expected = Node(
             "ROOT",
             left=Node(
@@ -118,23 +118,23 @@ class TestPlottingDendrogram(unittest.TestCase):
         from helper_functions import Node
 
         self.test_case_1_lines = [
-            [[0, 0], [1, 5]],
-            [[2, 2], [4, 6]],
-            [[2, 2], [0, 2]],
-            [[2, 8], [0, 0]],
-            [[0, 2], [1, 1]],
-            [[2, 10], [2, 2]],
-            [[2, 6], [4, 4]],
-            [[0, 2], [5, 5]],
-            [[2, 4], [6, 6]],
-            [[-0.2, 0], [3, 3]],
+            [[0,0],[0.5,2.5]],
+            [[2,2],[2,3]],
+            [[2,2],[0,1]],
+            [[2,8],[0,0]],
+            [[0,2],[0.5,0.5]],
+            [[2,10],[1,1]],
+            [[2,6],[2,2]],
+            [[0,2],[2.5,2.5]],
+            [[2,4],[3,3]],
+            [[-0.2,0],[1.5,1.5]],
         ]
 
         self.test_case_1_leaf_labels = {
             "A": [8, 0],
-            "B": [10, 2],
-            "C": [6, 4],
-            "D": [4, 6],
+            "B": [10, 1],
+            "C": [6, 2],
+            "D": [4, 3],
         }
 
         self.test_case_2_lines = [
@@ -279,6 +279,7 @@ class TestPlottingDendrogram(unittest.TestCase):
     def test_plotting_dendrogram(self):
 
         from helper_functions import plot_nj_tree
+        import matplotlib.pyplot as plt
 
         f, ax = plt.subplots(2, 2, figsize=(10, 7))
 

@@ -177,7 +177,7 @@ def reroot_tree(original_tree: Node, outgroup_node: Node) -> Node:
     return new_root
 
 
-def sort_children(tree: Node) -> None:
+def sort_children_by_leaves(tree: Node) -> None:
     """Sort the children of a tree by their corresponding number of leaves.
 
     The tree can be changed inplace.

@@ -38,7 +38,7 @@ You will need Python 3.10 or higher. You will need to install `biopython` for ac
 ```
 pip install biopython matplotlib jupyterlab
 ```
-Please do not use any other libraries, because they will not be installed in the automatic grader environment and will fail, resulting in zero points. If you think some other library absolutely needs to be included, please reach out on Slack and we will discuss it there.
+Please do not use any other libraries, because they will not be installed in the automatic grader environment and will fail, resulting in zero points. If you think some other library absolutely needs to be included, please reach out on forum and we will discuss it there.
 
 You can start the notebook by running
 ```

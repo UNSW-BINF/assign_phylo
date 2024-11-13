@@ -54,3 +54,15 @@ jobs:
 
       - name: Check Images visible
         uses: ./homework-actions/action-images-white
+      
+      - name: Check Images real SVG
+        uses: ./homework-actions/action-real-SVG-images
+      
+      - name: Images as SVGs
+        uses: ./homework-actions/action-stored-SVG
+        with:
+          args: >
+            problem3.svg
+            recombination.svg
+            confidence_tree.svg
+            radial_dendrogram.svg

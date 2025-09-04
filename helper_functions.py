@@ -70,6 +70,9 @@ def neighbor_joining(distances: np.ndarray, labels: list) -> Node:
         A root node of the neighbor joining tree.
 
     """
+    
+    self.tree = Node()
+
     raise NotImplementedError()
 
 
@@ -96,6 +99,7 @@ def plot_nj_tree(tree: Node, ax: Axes = None, **kwargs) -> None:
     >>> fig.savefig("example.png")
 
     """
+
     return ax
 
 
@@ -116,6 +120,7 @@ def _find_a_parent_to_node(tree: Node, node: Node) -> tuple:
         ]
 
     return None
+
 
 
 def _remove_child_from_parent(parent_node: Node, child_location: str) -> None:
@@ -182,7 +187,7 @@ def sort_children_by_leaves(tree: Node) -> None:
 
     The tree can be changed inplace.
 
-    Paramteres
+    Parameters
     ----------
     tree: Node
         The root node of the tree.

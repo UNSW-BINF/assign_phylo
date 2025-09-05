@@ -1,10 +1,16 @@
-# Homework 3: Mapping the family tree
+# Mapping the family tree
 
 Evolution is the process by which different living organisms are believed to have developed from earlier forms during the earth's history. The main component that evolves through time is the DNA which is passed on to the next generation. Genetic mutations, variation, and recombination are processes that modify DNA and cause variation in the population. The main drivers of evolution are natural selection and genetic drift that act on this variation. Through time, some characteristics become more common or rare in the population resulting in a change in heritable ones arising over successive generations.
 
 Even though we do not consider viruses to be *living* organisms, they are still subject to evolution. Their genetic material undergoes the same transformations and selection, resulting in new variants and types of viruses.
 
-Open `homework-3.ipynb` to get started.
+**The tasks of this assignment are:**
+- Neighbour joining implementation
+- Plotting a phylogenetic tree
+- Phylogenetic analysis of coronavirus
+- Recombination
+
+Open `phylo_workbook.ipynb` to get started.
 
 ## Submission and Grading
 There are three types of exercises/answers within each homework:
@@ -22,7 +28,6 @@ You will need Python 3.10 or higher. You will need to install `biopython` for ac
 ```
 pip install biopython matplotlib jupyterlab
 ```
-Please do not use any other libraries, because they will not be installed in the automatic grader environment and will fail, resulting in zero points. If you think some other library absolutely needs to be included, please reach out on forum and we will discuss it there.
 
 You can start the notebook by running
 ```

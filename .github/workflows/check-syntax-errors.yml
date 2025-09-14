@@ -26,7 +26,7 @@ jobs:
       - name: Checkout Actions Repository
         uses: actions/checkout@v4
         with:
-          repository: IB-ULFRI/homework-actions
+          repository: UNSW-BINF/homework-actions
           path: ./homework-actions
 
       - name: Check Syntax
